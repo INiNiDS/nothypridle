@@ -59,4 +59,4 @@ assets = [
 
 [package.metadata.binstall]
 bin-dir = "{ bin }{ binary-ext }"
-pkg-url = "{ repo }/releases/download/nothypridle-v{ version }/{ name }-{ version }-{ target }.tar.gz"
+pkg-url = "{ repo }/releases/download/v{ version }/{ name }-{ version }-{ target }.tar.gz"

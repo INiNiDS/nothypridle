@@ -82,7 +82,7 @@ jobs:
 
       - name: Generate PKGBUILD
         run: |
-          TAG="nothypridle-v${VERSION}"
+          TAG="v${VERSION}"
           SRC_URL="https://github.com/ininids/nothypridle/archive/refs/tags/${TAG}.tar.gz"
           curl -sLo source.tar.gz "$SRC_URL"
           SHA256=$(sha256sum source.tar.gz | cut -d' ' -f1)
@@ -123,7 +123,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload "nothypridle-v${VERSION}" \
+          gh release upload "v${VERSION}" \
             "${{ env.BIN_ARCHIVE }}" \
             target/debian/*.deb \
             target/generate-rpm/*.rpm \
@@ -176,7 +176,7 @@ jobs:
 
       - name: Generate PKGBUILD
         run: |
-          TAG="nothypridle-v${VERSION}"
+          TAG="v${VERSION}"
           SRC_URL="https://github.com/ininids/nothypridle/archive/refs/tags/${TAG}.tar.gz"
           curl -sLo source.tar.gz "$SRC_URL"
           SHA256=$(sha256sum source.tar.gz | cut -d' ' -f1)
@@ -217,7 +217,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload "nothypridle-v${VERSION}" \
+          gh release upload "v${VERSION}" \
             "${{ env.BIN_ARCHIVE }}" \
             target/debian/*.deb \
             target/generate-rpm/*.rpm \
