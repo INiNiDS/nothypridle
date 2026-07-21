@@ -145,7 +145,7 @@ jobs:
           sed -i "s/__SHA256__/${SHA256}/g" PKGBUILD
           sed -i "s|__SRC_URL__|${SRC_URL}|g" PKGBUILD
 
-          gh release upload "v${VERSION}" \
+          gh release upload "v${VERSION}" --clobber \
             "${BIN_NAME}.tar.gz" \
             "nothypridle_${VERSION}_amd64.deb" \
             "${RPM_FILE}" \
@@ -254,7 +254,7 @@ jobs:
           sed -i "s/__SHA256__/${SHA256}/g" PKGBUILD
           sed -i "s|__SRC_URL__|${SRC_URL}|g" PKGBUILD
 
-          gh release upload "v${VERSION}" \
+          gh release upload "v${VERSION}" --clobber \
             "${BIN_NAME}.tar.gz" \
             "nothypridle_${VERSION}_amd64.deb" \
             "${RPM_FILE}" \
