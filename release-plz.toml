@@ -1,2 +1,10 @@
 [workspace]
 # release-plz: PR only on push, release on merge
+
+[[package]]
+name = "nh-hal"
+publish = false
+
+[[package]]
+name = "nothypridle"
+publish = false

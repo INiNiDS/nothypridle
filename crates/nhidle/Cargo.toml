@@ -1,6 +1,5 @@
 [package]
 name = "nothypridle"
-publish = false
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
