@@ -19,7 +19,7 @@ wayland-protocols-wlr = {workspace = true}
 zbus = {workspace = true}
 aam-rs = {workspace = true}
 tracing-subscriber = {workspace = true}
-nh-hal = {workspace = true}
+nh-hal = {workspace = true, version = "0.1.0"}
 tracing = {workspace = true}
 anyhow = "1.0.103"
 futures-util = "0.3.32"
