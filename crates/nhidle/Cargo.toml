@@ -54,3 +54,7 @@ assets = [
     ["target/release/nhidle", "usr/bin/nothypridle", "755"],
     ["../../README.md", "usr/share/doc/nothypridle/README.md", "644"],
 ]
+
+[package.metadata.binstall]
+bin-dir = "{ bin }{ binary-ext }"
+pkg-url = "{ repo }/releases/download/nothypridle-v{ version }/{ name }-{ version }-{ target }.tar.gz"
