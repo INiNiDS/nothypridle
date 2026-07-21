@@ -74,7 +74,7 @@ jobs:
           mkdir -p "${BIN_NAME}"
           cp target/release/nothypridle "${BIN_NAME}/"
           cp README.md dist/config.example.aam dist/rules.example.aam dist/schema.aam dist/nothypridle.service "${BIN_NAME}/"
-          tar czf "${BIN_NAME}.tar.gz" "${BIN_NAME}"
+          tar czf "${BIN_NAME}.tar.gz" -C "${BIN_NAME}" .
 
           # .deb package
           DEB_ROOT="deb-pkg"
@@ -191,7 +191,7 @@ jobs:
           mkdir -p "${BIN_NAME}"
           cp target/release/nothypridle "${BIN_NAME}/"
           cp README.md dist/config.example.aam dist/rules.example.aam dist/schema.aam dist/nothypridle.service "${BIN_NAME}/"
-          tar czf "${BIN_NAME}.tar.gz" "${BIN_NAME}"
+          tar czf "${BIN_NAME}.tar.gz" -C "${BIN_NAME}" .
 
           DEB_ROOT="deb-pkg"
           mkdir -p "${DEB_ROOT}/DEBIAN"
