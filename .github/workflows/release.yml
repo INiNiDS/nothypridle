@@ -83,7 +83,8 @@ jobs:
         run: cargo deb -p nothypridle
 
       - name: Build .rpm package
-        run: cargo rpm build --manifest-path crates/nhidle/Cargo.toml
+        working-directory: crates/nhidle
+        run: cargo rpm build
 
       - name: Generate PKGBUILD
         run: |
@@ -177,7 +178,8 @@ jobs:
         run: cargo deb -p nothypridle
 
       - name: Build .rpm package
-        run: cargo rpm build --manifest-path crates/nhidle/Cargo.toml
+        working-directory: crates/nhidle
+        run: cargo rpm build
 
       - name: Generate PKGBUILD
         run: |

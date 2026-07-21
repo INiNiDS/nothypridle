@@ -51,16 +51,3 @@ future_not_send = "warn"
 large_futures = "warn"
 unused_async = "warn"
 result_large_err = "warn"
-
-[workspace.metadata.rpm.cargo]
-buildflags = ["--release"]
-
-[workspace.metadata.rpm.targets]
-nhidle = { path = "/usr/bin/nothypridle" }
-
-[workspace.metadata.rpm]
-summary = "A Wayland idle management daemon written in Rust"
-description = """
-A Wayland idle management daemon featuring custom configuration
-via aam-rs and smart inhibitors support (MPRIS, NVML, sysinfo).
-"""

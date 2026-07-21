@@ -60,3 +60,16 @@ assets = [
 [package.metadata.binstall]
 bin-dir = "{ bin }{ binary-ext }"
 pkg-url = "{ repo }/releases/download/v{ version }/{ name }-{ version }-{ target }.tar.gz"
+
+[package.metadata.rpm.cargo]
+buildflags = ["--release"]
+
+[package.metadata.rpm.targets]
+nhidle = { path = "/usr/bin/nothypridle" }
+
+[package.metadata.rpm]
+summary = "A Wayland idle management daemon written in Rust"
+description = """
+A Wayland idle management daemon featuring custom configuration
+via aam-rs and smart inhibitors support (MPRIS, NVML, sysinfo).
+"""
