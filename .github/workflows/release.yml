@@ -3,15 +3,37 @@ name: Release
 on:
   push:
     branches: [main]
+  pull_request:
+    types: [closed]
+    branches: [main]
 
 permissions:
   pull-requests: write
   contents: write
-  id-token: write
 
 jobs:
-  release-plz:
+  release-plz-pr:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: MarcoIeni/release-plz-action@v0.5
+        with:
+          command: release-pr
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish:
+    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release-plz-')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,6 +47,8 @@ jobs:
           sudo apt-get install -y -q libdbus-1-dev libwayland-dev wayland-protocols pkg-config
 
       - uses: MarcoIeni/release-plz-action@v0.5
+        with:
+          command: release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_TOKEN }}
