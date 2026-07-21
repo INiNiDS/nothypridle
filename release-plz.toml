@@ -1,5 +1,5 @@
 [workspace]
-git_tag_name = "{{ package }}-v{{ version }}"
+git_tag_name = "v{{ version }}"
 git_only = true
 
 [[package]]
