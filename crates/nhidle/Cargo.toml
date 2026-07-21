@@ -19,11 +19,13 @@ wayland-protocols-wlr = {workspace = true}
 zbus = {workspace = true}
 aam-rs = {workspace = true}
 tracing-subscriber = {workspace = true}
-nh-hal = { path = "../nh-hal", version = "0.1.0" }
 tracing = {workspace = true}
 anyhow = "1.0.103"
 futures-util = "0.3.32"
 dirs = "6.0.0"
+mpris = {workspace = true}
+sysinfo = {workspace = true}
+nvml-wrapper = {workspace = true}
 
 [[bin]]
 name = "nhidle"

@@ -759,16 +759,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "nh-hal"
-version = "0.1.0"
-dependencies = [
- "mpris",
- "nvml-wrapper",
- "sysinfo",
- "tracing",
-]
-
-[[package]]
 name = "nothypridle"
 version = "0.1.0"
 dependencies = [
@@ -776,9 +766,12 @@ dependencies = [
  "anyhow",
  "dirs",
  "futures-util",
- "nh-hal",
+ "mpris",
  "nothypridle",
+ "nvml-wrapper",
+ "sysinfo",
  "tokio",
+ "tracing",
  "tracing-subscriber",
  "wayland-client",
  "wayland-protocols",
