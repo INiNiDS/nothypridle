@@ -1,0 +1,14 @@
+@schema Rule {
+    id: string
+    timeout: i32
+    max_cpu_usage: f64
+    max_gpu_usage: f64
+    min_ram_mb: i32
+    min_vram_mb: i32
+    music_playing: bool
+    fullscreen: bool
+    on_timeout*: string
+    on_resume*: string
+    music_process_name*: string
+    keep_alive_processes*: list<string>
+}

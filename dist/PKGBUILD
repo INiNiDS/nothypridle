@@ -1,0 +1,27 @@
+# Maintainer: Nikita Goncharov <ininids@ininids.in.rs>
+
+pkgname=nothypridle
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="A Wayland idle management daemon written in Rust"
+arch=('x86_64')
+url="https://github.com/ininids/nothypridle"
+license=('BSD-3-Clause')
+makedepends=('cargo' 'pkg-config' 'wayland-protocols')
+depends=('wayland')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --locked
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm755 target/release/nhidle "$pkgdir/usr/bin/nothypridle"
+  install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+  install -Dm644 dist/config.example.aam "$pkgdir/usr/share/$pkgname/config.example.aam"
+  install -Dm644 dist/rules.example.aam "$pkgdir/usr/share/$pkgname/rules.example.aam"
+  install -Dm644 dist/nhidle-cargo.service "$pkgdir/usr/lib/systemd/user/nothypridle.service"
+}

@@ -1,0 +1,15 @@
+# Optional global hooks loaded from ~/.config/nothypridle/config.aam
+# All keys are optional; omit any hook you do not need.
+# String values do not need quotes in AAM — everything after = is the value.
+
+# Run before the system suspends (login1 PrepareForSleep(true)).
+before_sleep_cmd = loginctl lock-session
+
+# Run after the system resumes (login1 PrepareForSleep(false)).
+after_sleep_cmd = killall -SIGUSR1 waybar
+
+# Run when the session is locked (login1 Session Lock).
+lock_cmd = hyprlock
+
+# Run when the session is unlocked (login1 Session Unlock).
+unlock_cmd = pkill hyprlock

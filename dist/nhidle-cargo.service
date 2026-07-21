@@ -1,0 +1,14 @@
+[Unit]
+Description=nothypridle Wayland idle daemon
+Documentation=https://github.com/ininids/nothypridle
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.cargo/bin/nhidle
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target

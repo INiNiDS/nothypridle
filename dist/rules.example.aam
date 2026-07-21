@@ -1,0 +1,47 @@
+# Example nothypridle rule.
+# Place under ~/.config/nothypridle/rules/<id>.aam alongside schema.aam.
+#
+# The @derive directive imports the @schema Rule definition from schema.aam,
+# enabling AAM to validate every field's type and presence at load time.
+# Required fields (without *) must be provided; optional fields (with *)
+# may be omitted.
+
+@derive schema.aam::Rule
+
+# Rule identifier (req, string) — used by the daemon to track this rule.
+id = lock
+
+# Idle timeout in seconds (req, i32).
+timeout = 300
+
+# Inhibit when global CPU usage (percent) exceeds this (req, f64).
+max_cpu_usage = 15.0
+
+# Inhibit when GPU busy percent exceeds this (req, f64).
+max_gpu_usage = 15.0
+
+# Inhibit when free RAM drops below this, in MB (req, i32).
+min_ram_mb = 1024
+
+# Inhibit when free VRAM drops below this, in MB (req, i32).
+min_vram_mb = 256
+
+# Whether to apply the music-playback inhibitor (req, bool).
+music_playing = true
+
+# Whether to apply the fullscreen-toplevel inhibitor (req, bool).
+fullscreen = true
+
+# Command to run when the idle timer fires (opt, string).
+on_timeout = "loginctl lock-session"
+
+# Command to run when activity resumes after the rule fired (opt, string).
+on_resume = "pkill hyprlock"
+
+# Optional MPRIS player identity to watch. If unset, *any* playing player
+# inhibits the rule (opt, string).
+# music_process_name = "spotify"
+
+# Process-name substrings that, if running, keep the rule from firing
+# (opt, list<string>). Defaults to empty.
+keep_alive_processes = [ffmpeg, HandBrake]
