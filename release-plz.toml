@@ -1,5 +1,6 @@
 [workspace]
 git_tag_name = "{{ package }}-v{{ version }}"
+git_only = true
 
 [[package]]
 name = "nh-hal"
