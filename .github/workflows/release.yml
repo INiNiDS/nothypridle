@@ -6,6 +6,7 @@ on:
   pull_request:
     types: [closed]
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   pull-requests: write
@@ -50,6 +51,97 @@ jobs:
           command: release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build release binary
+        run: cargo build --release
+
+      - name: Prepare binary archive
+        run: |
+          VERSION=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[] | select(.name=="nothypridle") | .version')
+          NAME="nothypridle-${VERSION}-x86_64-unknown-linux-gnu"
+          mkdir -p "$NAME"
+          cp target/release/nhidle "$NAME/"
+          cp README.md dist/config.example.aam dist/rules.example.aam dist/schema.aam dist/nhidle-cargo.service "$NAME/"
+          tar czf "${NAME}.tar.gz" "$NAME"
+          echo "BIN_ARCHIVE=${NAME}.tar.gz" >> "$GITHUB_ENV"
+          echo "VERSION=${VERSION}" >> "$GITHUB_ENV"
+
+      - name: Install cargo-deb and cargo-rpm
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-deb,cargo-rpm
+
+      - name: Build .deb package
+        run: cargo deb -p nothypridle
+
+      - name: Build .rpm package
+        run: cargo rpm build
+
+      - name: Generate PKGBUILD
+        run: |
+          TAG="nothypridle-v${VERSION}"
+          SRC_URL="https://github.com/ininids/nothypridle/archive/refs/tags/${TAG}.tar.gz"
+          curl -sLo source.tar.gz "$SRC_URL"
+          SHA256=$(sha256sum source.tar.gz | cut -d' ' -f1)
+          rm source.tar.gz
+
+          cat > PKGBUILD << PKGBUILD_EOF
+          # Maintainer: Nikita Goncharov <ininids@ininids.in.rs>
+          pkgname=nothypridle
+          pkgver=${VERSION}
+          pkgrel=1
+          pkgdesc="A Wayland idle management daemon written in Rust"
+          arch=('x86_64')
+          url="https://github.com/ininids/nothypridle"
+          license=('BSD-3-Clause')
+          makedepends=('cargo' 'pkg-config' 'wayland-protocols')
+          depends=('wayland')
+          source=("\$pkgname-\$pkgver.tar.gz::${SRC_URL}")
+          sha256sums=('${SHA256}')
+
+          build() {
+            cd "\$pkgname-\$pkgver"
+            cargo build --release --locked
+          }
+
+          package() {
+            cd "\$pkgname-\$pkgver"
+            install -Dm755 target/release/nhidle "\$pkgdir/usr/bin/nothypridle"
+            install -Dm644 README.md "\$pkgdir/usr/share/doc/\$pkgname/README.md"
+            install -Dm644 dist/config.example.aam "\$pkgdir/usr/share/\$pkgname/config.example.aam"
+            install -Dm644 dist/rules.example.aam "\$pkgdir/usr/share/\$pkgname/rules.example.aam"
+            install -Dm644 dist/nhidle-cargo.service "\$pkgdir/usr/lib/systemd/user/nothypridle.service"
+          }
+          PKGBUILD_EOF
+
+          echo "PKGBUILD=${PWD}/PKGBUILD" >> "$GITHUB_ENV"
+
+      - name: Upload assets to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "nothypridle-v${VERSION}" \
+            "${{ env.BIN_ARCHIVE }}" \
+            target/debian/*.deb \
+            target/generate-rpm/*.rpm \
+            "${{ env.PKGBUILD }}"
+
+  build-assets:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q libdbus-1-dev libwayland-dev wayland-protocols pkg-config rpm liblzma-dev
 
       - name: Build release binary
         run: cargo build --release
