@@ -6,7 +6,7 @@ PartOf=graphical-session.target
 
 [Service]
 Type=simple
-ExecStart=%h/.cargo/bin/nhidle
+ExecStart=%h/.cargo/bin/nothypridle
 Restart=on-failure
 RestartSec=5
 

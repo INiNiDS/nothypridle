@@ -19,9 +19,9 @@ build() {
 
 package() {
   cd "$pkgname-$pkgver"
-  install -Dm755 target/release/nhidle "$pkgdir/usr/bin/nothypridle"
+  install -Dm755 target/release/nothypridle "$pkgdir/usr/bin/nothypridle"
   install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
   install -Dm644 dist/config.example.aam "$pkgdir/usr/share/$pkgname/config.example.aam"
   install -Dm644 dist/rules.example.aam "$pkgdir/usr/share/$pkgname/rules.example.aam"
-  install -Dm644 dist/nhidle-cargo.service "$pkgdir/usr/lib/systemd/user/nothypridle.service"
+  install -Dm644 dist/nothypridle.service "$pkgdir/usr/lib/systemd/user/nothypridle.service"
 }

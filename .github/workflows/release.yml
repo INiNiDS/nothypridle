@@ -72,8 +72,8 @@ jobs:
           # Binary archive
           BIN_NAME="nothypridle-${VERSION}-x86_64-unknown-linux-gnu"
           mkdir -p "${BIN_NAME}"
-          cp target/release/nhidle "${BIN_NAME}/"
-          cp README.md dist/config.example.aam dist/rules.example.aam dist/schema.aam dist/nhidle-cargo.service "${BIN_NAME}/"
+          cp target/release/nothypridle "${BIN_NAME}/"
+          cp README.md dist/config.example.aam dist/rules.example.aam dist/schema.aam dist/nothypridle.service "${BIN_NAME}/"
           tar czf "${BIN_NAME}.tar.gz" "${BIN_NAME}"
 
           # .deb package
@@ -83,10 +83,10 @@ jobs:
           mkdir -p "${DEB_ROOT}/usr/share/doc/nothypridle"
           mkdir -p "${DEB_ROOT}/usr/share/nothypridle"
           mkdir -p "${DEB_ROOT}/usr/lib/systemd/user"
-          cp target/release/nhidle "${DEB_ROOT}/usr/bin/nothypridle"
+          cp target/release/nothypridle "${DEB_ROOT}/usr/bin/nothypridle"
           cp README.md "${DEB_ROOT}/usr/share/doc/nothypridle/"
           cp dist/config.example.aam dist/rules.example.aam "${DEB_ROOT}/usr/share/nothypridle/"
-          cp dist/nhidle-cargo.service "${DEB_ROOT}/usr/lib/systemd/user/nothypridle.service"
+          cp dist/nothypridle.service "${DEB_ROOT}/usr/lib/systemd/user/nothypridle.service"
           cat > "${DEB_ROOT}/DEBIAN/control" << EOF
           Package: nothypridle
           Version: ${VERSION}
@@ -134,11 +134,11 @@ jobs:
 
           package() {
             cd "$pkgname-$pkgver"
-            install -Dm755 target/release/nhidle "$pkgdir/usr/bin/nothypridle"
+            install -Dm755 target/release/nothypridle "$pkgdir/usr/bin/nothypridle"
             install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
             install -Dm644 dist/config.example.aam "$pkgdir/usr/share/$pkgname/config.example.aam"
             install -Dm644 dist/rules.example.aam "$pkgdir/usr/share/$pkgname/rules.example.aam"
-            install -Dm644 dist/nhidle-cargo.service "$pkgdir/usr/lib/systemd/user/nothypridle.service"
+            install -Dm644 dist/nothypridle.service "$pkgdir/usr/lib/systemd/user/nothypridle.service"
           }
           PKGBUILD_EOF
 
@@ -189,8 +189,8 @@ jobs:
 
           BIN_NAME="nothypridle-${VERSION}-x86_64-unknown-linux-gnu"
           mkdir -p "${BIN_NAME}"
-          cp target/release/nhidle "${BIN_NAME}/"
-          cp README.md dist/config.example.aam dist/rules.example.aam dist/schema.aam dist/nhidle-cargo.service "${BIN_NAME}/"
+          cp target/release/nothypridle "${BIN_NAME}/"
+          cp README.md dist/config.example.aam dist/rules.example.aam dist/schema.aam dist/nothypridle.service "${BIN_NAME}/"
           tar czf "${BIN_NAME}.tar.gz" "${BIN_NAME}"
 
           DEB_ROOT="deb-pkg"
@@ -199,10 +199,10 @@ jobs:
           mkdir -p "${DEB_ROOT}/usr/share/doc/nothypridle"
           mkdir -p "${DEB_ROOT}/usr/share/nothypridle"
           mkdir -p "${DEB_ROOT}/usr/lib/systemd/user"
-          cp target/release/nhidle "${DEB_ROOT}/usr/bin/nothypridle"
+          cp target/release/nothypridle "${DEB_ROOT}/usr/bin/nothypridle"
           cp README.md "${DEB_ROOT}/usr/share/doc/nothypridle/"
           cp dist/config.example.aam dist/rules.example.aam "${DEB_ROOT}/usr/share/nothypridle/"
-          cp dist/nhidle-cargo.service "${DEB_ROOT}/usr/lib/systemd/user/nothypridle.service"
+          cp dist/nothypridle.service "${DEB_ROOT}/usr/lib/systemd/user/nothypridle.service"
           cat > "${DEB_ROOT}/DEBIAN/control" << EOF
           Package: nothypridle
           Version: ${VERSION}
@@ -248,11 +248,11 @@ jobs:
 
           package() {
             cd "$pkgname-$pkgver"
-            install -Dm755 target/release/nhidle "$pkgdir/usr/bin/nothypridle"
+            install -Dm755 target/release/nothypridle "$pkgdir/usr/bin/nothypridle"
             install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
             install -Dm644 dist/config.example.aam "$pkgdir/usr/share/$pkgname/config.example.aam"
             install -Dm644 dist/rules.example.aam "$pkgdir/usr/share/$pkgname/rules.example.aam"
-            install -Dm644 dist/nhidle-cargo.service "$pkgdir/usr/lib/systemd/user/nothypridle.service"
+            install -Dm644 dist/nothypridle.service "$pkgdir/usr/lib/systemd/user/nothypridle.service"
           }
           PKGBUILD_EOF
 

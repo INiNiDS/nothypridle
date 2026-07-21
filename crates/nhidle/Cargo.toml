@@ -28,7 +28,7 @@ sysinfo = {workspace = true}
 nvml-wrapper = {workspace = true}
 
 [[bin]]
-name = "nhidle"
+name = "nothypridle"
 path = "src/main.rs"
 
 [features]
@@ -65,7 +65,7 @@ pkg-url = "{ repo }/releases/download/v{ version }/{ name }-{ version }-{ target
 buildflags = ["--release"]
 
 [package.metadata.rpm.targets]
-nhidle = { path = "/usr/bin/nothypridle" }
+nothypridle = { path = "/usr/bin/nothypridle" }
 
 [package.metadata.rpm]
 summary = "A Wayland idle management daemon written in Rust"

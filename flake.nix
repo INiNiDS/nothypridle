@@ -33,7 +33,7 @@
           ];
 
           postInstall = ''
-            install -Dm644 dist/nhidle-cargo.service "$out/lib/systemd/user/nothypridle.service"
+            install -Dm644 dist/nothypridle.service "$out/lib/systemd/user/nothypridle.service"
             install -Dm644 dist/config.example.aam "$out/share/nothypridle/config.example.aam"
             install -Dm644 dist/rules.example.aam "$out/share/nothypridle/rules.example.aam"
             install -Dm644 dist/schema.aam "$out/share/nothypridle/schema.aam"
@@ -43,7 +43,7 @@
             description = "A Wayland idle management daemon with smart inhibitors";
             homepage = "https://github.com/ininids/nothypridle";
             license = licenses.bsd3;
-            mainProgram = "nhidle";
+            mainProgram = "nothypridle";
             platforms = platforms.linux;
             maintainers = [];
           };
