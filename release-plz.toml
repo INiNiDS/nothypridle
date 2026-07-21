@@ -1,7 +1,2 @@
 [workspace]
 git_tag_name = "v{{ version }}"
-git_only = true
-
-[[package]]
-name = "nothypridle"
-publish = false
