@@ -1,0 +1,56 @@
+[package]
+name = "nothypridle"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+description.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[dependencies]
+tokio = {workspace = true}
+wayland-client = {workspace = true}
+wayland-protocols = {workspace = true}
+wayland-protocols-wlr = {workspace = true}
+zbus = {workspace = true}
+aam-rs = {workspace = true}
+tracing = {workspace = true}
+tracing-subscriber = {workspace = true}
+nh-hal = {workspace = true}
+anyhow = "1.0.103"
+futures-util = "0.3.32"
+dirs = "6.0.0"
+
+[[bin]]
+name = "nhidle"
+path = "src/main.rs"
+
+[features]
+default = []
+# Exposes test scaffolding (e.g. `RecordingRunner`, `FullscreenState::test_any`)
+# so it does not ship as part of the public library API. Enabled only by the
+# crate's own integration tests via the self-dev-dependency below.
+test-util = []
+
+[dev-dependencies]
+nothypridle = { path = ".", features = ["test-util"] }
+
+[package.metadata.deb]
+name = "nothypridle"
+maintainer = "Nikita Goncharov <ininids@ininids.in.rs>"
+copyright = "2026, Nikita Goncharov <ininids@ininids.in.rs>"
+depends = "$auto"
+section = "utility"
+priority = "optional"
+extended-description = """\
+A Wayland idle management daemon written in Rust, featuring custom \
+configuration via aam-rs and smart inhibitors support.\
+"""
+assets = [
+    ["target/release/nhidle", "usr/bin/nothypridle", "755"],
+    ["../../README.md", "usr/share/doc/nothypridle/README.md", "644"],
+]
