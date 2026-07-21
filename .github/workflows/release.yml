@@ -49,7 +49,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update -q
-          sudo apt-get install -y -q libdbus-1-dev libwayland-dev wayland-protocols pkg-config
+          sudo apt-get install -y -q libdbus-1-dev libwayland-dev wayland-protocols pkg-config rpm alien
 
       - name: Check compilation
         run: cargo check --workspace
@@ -65,13 +65,47 @@ jobs:
 
       - name: Package and upload
         run: |
+          set -euo pipefail
           VERSION=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[] | select(.name=="nothypridle") | .version')
-          NAME="nothypridle-${VERSION}-x86_64-unknown-linux-gnu"
-          mkdir -p "$NAME"
-          cp target/release/nhidle "$NAME/"
-          cp README.md dist/config.example.aam dist/rules.example.aam dist/schema.aam dist/nhidle-cargo.service "$NAME/"
-          tar czf "${NAME}.tar.gz" "$NAME"
 
+          # Binary archive
+          BIN_NAME="nothypridle-${VERSION}-x86_64-unknown-linux-gnu"
+          mkdir -p "${BIN_NAME}"
+          cp target/release/nhidle "${BIN_NAME}/"
+          cp README.md dist/config.example.aam dist/rules.example.aam dist/schema.aam dist/nhidle-cargo.service "${BIN_NAME}/"
+          tar czf "${BIN_NAME}.tar.gz" "${BIN_NAME}"
+
+          # .deb package
+          DEB_ROOT="deb-pkg"
+          mkdir -p "${DEB_ROOT}/DEBIAN"
+          mkdir -p "${DEB_ROOT}/usr/bin"
+          mkdir -p "${DEB_ROOT}/usr/share/doc/nothypridle"
+          mkdir -p "${DEB_ROOT}/usr/share/nothypridle"
+          mkdir -p "${DEB_ROOT}/usr/lib/systemd/user"
+          cp target/release/nhidle "${DEB_ROOT}/usr/bin/nothypridle"
+          cp README.md "${DEB_ROOT}/usr/share/doc/nothypridle/"
+          cp dist/config.example.aam dist/rules.example.aam "${DEB_ROOT}/usr/share/nothypridle/"
+          cp dist/nhidle-cargo.service "${DEB_ROOT}/usr/lib/systemd/user/nothypridle.service"
+          cat > "${DEB_ROOT}/DEBIAN/control" << EOF
+          Package: nothypridle
+          Version: ${VERSION}
+          Architecture: amd64
+          Maintainer: Nikita Goncharov <ininids@ininids.in.rs>
+          Section: utils
+          Priority: optional
+          Depends: libwayland-client0
+          Description: Wayland idle management daemon with smart inhibitors
+           nothypridle watches per-rule idle timers through the Wayland
+           ext-idle-notification-v1 protocol with configurable inhibitors
+           (CPU/GPU/RAM/VRAM, processes, audio, fullscreen).
+          EOF
+          dpkg-deb --build "${DEB_ROOT}" "nothypridle_${VERSION}_amd64.deb"
+
+          # .rpm via alien
+          sudo alien -r --scripts "nothypridle_${VERSION}_amd64.deb"
+          RPM_FILE=$(ls nothypridle-${VERSION}*.rpm | head -1)
+
+          # PKGBUILD
           TAG="v${VERSION}"
           SRC_URL="https://github.com/ininids/nothypridle/archive/refs/tags/${TAG}.tar.gz"
           curl -sLo source.tar.gz "$SRC_URL"
@@ -89,7 +123,7 @@ jobs:
           license=('BSD-3-Clause')
           makedepends=('cargo' 'pkg-config' 'wayland-protocols')
           depends=('wayland')
-          source=("$pkgname-$pkgver.tar.gz::${SRC_URL}")
+          source=("$pkgname-$pkgver.tar.gz::__SRC_URL__")
           sha256sums=('__SHA256__')
 
           build() {
@@ -109,8 +143,13 @@ jobs:
 
           sed -i "s/__VERSION__/${VERSION}/g" PKGBUILD
           sed -i "s/__SHA256__/${SHA256}/g" PKGBUILD
+          sed -i "s|__SRC_URL__|${SRC_URL}|g" PKGBUILD
 
-          gh release upload "v${VERSION}" "${NAME}.tar.gz" PKGBUILD
+          gh release upload "v${VERSION}" \
+            "${BIN_NAME}.tar.gz" \
+            "nothypridle_${VERSION}_amd64.deb" \
+            "${RPM_FILE}" \
+            PKGBUILD
         env:
           GH_TOKEN: ${{ github.token }}
 
@@ -129,7 +168,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update -q
-          sudo apt-get install -y -q libdbus-1-dev libwayland-dev wayland-protocols pkg-config
+          sudo apt-get install -y -q libdbus-1-dev libwayland-dev wayland-protocols pkg-config rpm alien
 
       - name: Check compilation
         run: cargo check --workspace
@@ -139,12 +178,42 @@ jobs:
 
       - name: Package and upload
         run: |
+          set -euo pipefail
           VERSION=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[] | select(.name=="nothypridle") | .version')
-          NAME="nothypridle-${VERSION}-x86_64-unknown-linux-gnu"
-          mkdir -p "$NAME"
-          cp target/release/nhidle "$NAME/"
-          cp README.md dist/config.example.aam dist/rules.example.aam dist/schema.aam dist/nhidle-cargo.service "$NAME/"
-          tar czf "${NAME}.tar.gz" "$NAME"
+
+          BIN_NAME="nothypridle-${VERSION}-x86_64-unknown-linux-gnu"
+          mkdir -p "${BIN_NAME}"
+          cp target/release/nhidle "${BIN_NAME}/"
+          cp README.md dist/config.example.aam dist/rules.example.aam dist/schema.aam dist/nhidle-cargo.service "${BIN_NAME}/"
+          tar czf "${BIN_NAME}.tar.gz" "${BIN_NAME}"
+
+          DEB_ROOT="deb-pkg"
+          mkdir -p "${DEB_ROOT}/DEBIAN"
+          mkdir -p "${DEB_ROOT}/usr/bin"
+          mkdir -p "${DEB_ROOT}/usr/share/doc/nothypridle"
+          mkdir -p "${DEB_ROOT}/usr/share/nothypridle"
+          mkdir -p "${DEB_ROOT}/usr/lib/systemd/user"
+          cp target/release/nhidle "${DEB_ROOT}/usr/bin/nothypridle"
+          cp README.md "${DEB_ROOT}/usr/share/doc/nothypridle/"
+          cp dist/config.example.aam dist/rules.example.aam "${DEB_ROOT}/usr/share/nothypridle/"
+          cp dist/nhidle-cargo.service "${DEB_ROOT}/usr/lib/systemd/user/nothypridle.service"
+          cat > "${DEB_ROOT}/DEBIAN/control" << EOF
+          Package: nothypridle
+          Version: ${VERSION}
+          Architecture: amd64
+          Maintainer: Nikita Goncharov <ininids@ininids.in.rs>
+          Section: utils
+          Priority: optional
+          Depends: libwayland-client0
+          Description: Wayland idle management daemon with smart inhibitors
+           nothypridle watches per-rule idle timers through the Wayland
+           ext-idle-notification-v1 protocol with configurable inhibitors
+           (CPU/GPU/RAM/VRAM, processes, audio, fullscreen).
+          EOF
+          dpkg-deb --build "${DEB_ROOT}" "nothypridle_${VERSION}_amd64.deb"
+
+          sudo alien -r --scripts "nothypridle_${VERSION}_amd64.deb"
+          RPM_FILE=$(ls nothypridle-${VERSION}*.rpm | head -1)
 
           TAG="v${VERSION}"
           SRC_URL="https://github.com/ininids/nothypridle/archive/refs/tags/${TAG}.tar.gz"
@@ -185,6 +254,10 @@ jobs:
           sed -i "s/__SHA256__/${SHA256}/g" PKGBUILD
           sed -i "s|__SRC_URL__|${SRC_URL}|g" PKGBUILD
 
-          gh release upload "v${VERSION}" "${NAME}.tar.gz" PKGBUILD
+          gh release upload "v${VERSION}" \
+            "${BIN_NAME}.tar.gz" \
+            "nothypridle_${VERSION}_amd64.deb" \
+            "${RPM_FILE}" \
+            PKGBUILD
         env:
           GH_TOKEN: ${{ github.token }}
