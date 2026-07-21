@@ -83,7 +83,7 @@ jobs:
         run: cargo deb -p nothypridle
 
       - name: Build .rpm package
-        run: cargo rpm build
+        run: cargo rpm build -p nothypridle
 
       - name: Generate PKGBUILD
         run: |
@@ -177,7 +177,7 @@ jobs:
         run: cargo deb -p nothypridle
 
       - name: Build .rpm package
-        run: cargo rpm build
+        run: cargo rpm build -p nothypridle
 
       - name: Generate PKGBUILD
         run: |
