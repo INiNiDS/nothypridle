@@ -58,6 +58,7 @@ assets = [
 ]
 
 [package.metadata.binstall]
+pkg-fmt = "tgz"
 pkg-url = "{ repo }/releases/download/v{ version }/{ name }-{ version }-{ target }.tar.gz"
 
 [package.metadata.rpm.cargo]
