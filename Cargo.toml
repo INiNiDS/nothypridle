@@ -3,7 +3,7 @@ members = ["crates/nhidle"]
 resolver = "3"
 
 [workspace.package]
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Nikita Goncharov <ininids@ininids.in.rs>"]
 edition = "2024"
 description = "A Wayland idle management daemon written in Rust, featuring custom configuration via aam-rs and smart inhibitors support."
