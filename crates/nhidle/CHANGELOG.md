@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2](https://github.com/INiNiDS/nothypridle/compare/v0.1.1...v0.1.2) - 2026-07-21
+
+### Fixed
+
+- add pkg-fmt=tgz to binstall metadata
+- flatten binary archive for binstall, remove bin-dir
+
 ## [0.1.1](https://github.com/INiNiDS/nothypridle/compare/v0.1.0...v0.1.1) - 2026-07-21
 
 ### Fixed
