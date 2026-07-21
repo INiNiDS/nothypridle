@@ -1,5 +1,5 @@
 [workspace]
-# release-plz: PR only on push, release on merge
+git_tag_name = "{{ package }}-v{{ version }}"
 
 [[package]]
 name = "nh-hal"
