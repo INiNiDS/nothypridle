@@ -779,7 +779,6 @@ dependencies = [
  "nh-hal",
  "nothypridle",
  "tokio",
- "tracing",
  "tracing-subscriber",
  "wayland-client",
  "wayland-protocols",
