@@ -68,28 +68,48 @@ jobs:
         run: |
           set -euo pipefail
           VERSION=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[] | select(.name=="nothypridle") | .version')
-
-          # Binary archive
+          TAG="v${VERSION}"
           BIN_NAME="nothypridle-${VERSION}-x86_64-unknown-linux-gnu"
+          BIN_URL="https://github.com/ininids/nothypridle/releases/download/${TAG}/${BIN_NAME}.tar.gz"
+
+          # Binary archive: binary + service file, flat
           mkdir -p "${BIN_NAME}"
           cp target/release/nothypridle "${BIN_NAME}/"
-          cp README.md dist/config.example.aam dist/rules.example.aam dist/schema.aam dist/nothypridle.service "${BIN_NAME}/"
+          cat > "${BIN_NAME}/nothypridle.service" << 'SVC'
+          [Unit]
+          Description=nothypridle Wayland idle daemon
+          After=graphical-session.target
+          PartOf=graphical-session.target
+          [Service]
+          Type=simple
+          ExecStart=nothypridle
+          Restart=on-failure
+          RestartSec=5
+          [Install]
+          WantedBy=graphical-session.target
+          SVC
           tar czf "${BIN_NAME}.tar.gz" -C "${BIN_NAME}" .
 
           # .deb package
           DEB_ROOT="deb-pkg"
-          mkdir -p "${DEB_ROOT}/DEBIAN"
-          mkdir -p "${DEB_ROOT}/usr/bin"
-          mkdir -p "${DEB_ROOT}/usr/share/doc/nothypridle"
-          mkdir -p "${DEB_ROOT}/usr/share/nothypridle"
-          mkdir -p "${DEB_ROOT}/usr/lib/systemd/user"
-          cp target/release/nothypridle "${DEB_ROOT}/usr/bin/nothypridle"
-          cp README.md "${DEB_ROOT}/usr/share/doc/nothypridle/"
-          cp dist/config.example.aam dist/rules.example.aam "${DEB_ROOT}/usr/share/nothypridle/"
-          cp dist/nothypridle.service "${DEB_ROOT}/usr/lib/systemd/user/nothypridle.service"
-          cat > "${DEB_ROOT}/DEBIAN/control" << EOF
+          mkdir -p "${DEB_ROOT}/DEBIAN" "${DEB_ROOT}/usr/bin" "${DEB_ROOT}/usr/lib/systemd/user"
+          cp target/release/nothypridle "${DEB_ROOT}/usr/bin/"
+          cat > "${DEB_ROOT}/usr/lib/systemd/user/nothypridle.service" << 'SVC'
+          [Unit]
+          Description=nothypridle Wayland idle daemon
+          After=graphical-session.target
+          PartOf=graphical-session.target
+          [Service]
+          Type=simple
+          ExecStart=/usr/bin/nothypridle
+          Restart=on-failure
+          RestartSec=5
+          [Install]
+          WantedBy=graphical-session.target
+          SVC
+          cat > "${DEB_ROOT}/DEBIAN/control" << 'CTRL'
           Package: nothypridle
-          Version: ${VERSION}
+          Version: __VERSION__
           Architecture: amd64
           Maintainer: Nikita Goncharov <ininids@ininids.in.rs>
           Section: utils
@@ -99,54 +119,41 @@ jobs:
            nothypridle watches per-rule idle timers through the Wayland
            ext-idle-notification-v1 protocol with configurable inhibitors
            (CPU/GPU/RAM/VRAM, processes, audio, fullscreen).
-          EOF
+          CTRL
+          sed -i "s/__VERSION__/${VERSION}/g" "${DEB_ROOT}/DEBIAN/control"
           dpkg-deb --build "${DEB_ROOT}" "nothypridle_${VERSION}_amd64.deb"
 
           # .rpm via alien
           sudo alien -r --scripts "nothypridle_${VERSION}_amd64.deb"
           RPM_FILE=$(ls nothypridle-${VERSION}*.rpm | head -1)
 
-          # PKGBUILD
-          TAG="v${VERSION}"
-          SRC_URL="https://github.com/ininids/nothypridle/archive/refs/tags/${TAG}.tar.gz"
-          curl -sLo source.tar.gz "$SRC_URL"
+          # PKGBUILD (binary, no cargo)
+          curl -sLo source.tar.gz "${BIN_URL}"
           SHA256=$(sha256sum source.tar.gz | cut -d' ' -f1)
           rm source.tar.gz
-
-          cat > PKGBUILD << 'PKGBUILD_EOF'
+          cat > PKGBUILD << 'EOPKG'
           # Maintainer: Nikita Goncharov <ininids@ininids.in.rs>
-          pkgname=nothypridle
+          pkgname=nothypridle-bin
           pkgver=__VERSION__
           pkgrel=1
           pkgdesc="A Wayland idle management daemon written in Rust"
           arch=('x86_64')
           url="https://github.com/ininids/nothypridle"
           license=('BSD-3-Clause')
-          makedepends=('cargo' 'pkg-config' 'wayland-protocols')
           depends=('wayland')
-          source=("$pkgname-$pkgver.tar.gz::__SRC_URL__")
+          source=("${pkgname}-${pkgver}.tar.gz::__BIN_URL__")
           sha256sums=('__SHA256__')
-
-          build() {
-            cd "$pkgname-$pkgver"
-            cargo build --release --locked
-          }
-
           package() {
-            cd "$pkgname-$pkgver"
-            install -Dm755 target/release/nothypridle "$pkgdir/usr/bin/nothypridle"
-            install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
-            install -Dm644 dist/config.example.aam "$pkgdir/usr/share/$pkgname/config.example.aam"
-            install -Dm644 dist/rules.example.aam "$pkgdir/usr/share/$pkgname/rules.example.aam"
-            install -Dm644 dist/nothypridle.service "$pkgdir/usr/lib/systemd/user/nothypridle.service"
+            cd "${srcdir}"
+            tar xzf "${pkgname}-${pkgver}.tar.gz"
+            find . -name nothypridle -type f -exec install -Dm755 {} "${pkgdir}/usr/bin/nothypridle" \;
           }
-          PKGBUILD_EOF
-
+          EOPKG
           sed -i "s/__VERSION__/${VERSION}/g" PKGBUILD
           sed -i "s/__SHA256__/${SHA256}/g" PKGBUILD
-          sed -i "s|__SRC_URL__|${SRC_URL}|g" PKGBUILD
+          sed -i "s|__BIN_URL__|${BIN_URL}|g" PKGBUILD
 
-          gh release upload "v${VERSION}" --clobber \
+          gh release upload "${TAG}" --clobber \
             "${BIN_NAME}.tar.gz" \
             "nothypridle_${VERSION}_amd64.deb" \
             "${RPM_FILE}" \
@@ -174,38 +181,58 @@ jobs:
       - name: Check compilation
         run: cargo check --workspace
 
-      - name: Build release binary
-        run: cargo build --release
-
       - name: Publish to crates.io
         run: cargo publish -p nothypridle
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_TOKEN }}
 
+      - name: Build release binary
+        run: cargo build --release
+
       - name: Package and upload
         run: |
           set -euo pipefail
           VERSION=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[] | select(.name=="nothypridle") | .version')
-
+          TAG="v${VERSION}"
           BIN_NAME="nothypridle-${VERSION}-x86_64-unknown-linux-gnu"
+          BIN_URL="https://github.com/ininids/nothypridle/releases/download/${TAG}/${BIN_NAME}.tar.gz"
+
           mkdir -p "${BIN_NAME}"
           cp target/release/nothypridle "${BIN_NAME}/"
-          cp README.md dist/config.example.aam dist/rules.example.aam dist/schema.aam dist/nothypridle.service "${BIN_NAME}/"
+          cat > "${BIN_NAME}/nothypridle.service" << 'SVC'
+          [Unit]
+          Description=nothypridle Wayland idle daemon
+          After=graphical-session.target
+          PartOf=graphical-session.target
+          [Service]
+          Type=simple
+          ExecStart=nothypridle
+          Restart=on-failure
+          RestartSec=5
+          [Install]
+          WantedBy=graphical-session.target
+          SVC
           tar czf "${BIN_NAME}.tar.gz" -C "${BIN_NAME}" .
 
           DEB_ROOT="deb-pkg"
-          mkdir -p "${DEB_ROOT}/DEBIAN"
-          mkdir -p "${DEB_ROOT}/usr/bin"
-          mkdir -p "${DEB_ROOT}/usr/share/doc/nothypridle"
-          mkdir -p "${DEB_ROOT}/usr/share/nothypridle"
-          mkdir -p "${DEB_ROOT}/usr/lib/systemd/user"
-          cp target/release/nothypridle "${DEB_ROOT}/usr/bin/nothypridle"
-          cp README.md "${DEB_ROOT}/usr/share/doc/nothypridle/"
-          cp dist/config.example.aam dist/rules.example.aam "${DEB_ROOT}/usr/share/nothypridle/"
-          cp dist/nothypridle.service "${DEB_ROOT}/usr/lib/systemd/user/nothypridle.service"
-          cat > "${DEB_ROOT}/DEBIAN/control" << EOF
+          mkdir -p "${DEB_ROOT}/DEBIAN" "${DEB_ROOT}/usr/bin" "${DEB_ROOT}/usr/lib/systemd/user"
+          cp target/release/nothypridle "${DEB_ROOT}/usr/bin/"
+          cat > "${DEB_ROOT}/usr/lib/systemd/user/nothypridle.service" << 'SVC'
+          [Unit]
+          Description=nothypridle Wayland idle daemon
+          After=graphical-session.target
+          PartOf=graphical-session.target
+          [Service]
+          Type=simple
+          ExecStart=/usr/bin/nothypridle
+          Restart=on-failure
+          RestartSec=5
+          [Install]
+          WantedBy=graphical-session.target
+          SVC
+          cat > "${DEB_ROOT}/DEBIAN/control" << 'CTRL'
           Package: nothypridle
-          Version: ${VERSION}
+          Version: __VERSION__
           Architecture: amd64
           Maintainer: Nikita Goncharov <ininids@ininids.in.rs>
           Section: utils
@@ -215,52 +242,39 @@ jobs:
            nothypridle watches per-rule idle timers through the Wayland
            ext-idle-notification-v1 protocol with configurable inhibitors
            (CPU/GPU/RAM/VRAM, processes, audio, fullscreen).
-          EOF
+          CTRL
+          sed -i "s/__VERSION__/${VERSION}/g" "${DEB_ROOT}/DEBIAN/control"
           dpkg-deb --build "${DEB_ROOT}" "nothypridle_${VERSION}_amd64.deb"
 
           sudo alien -r --scripts "nothypridle_${VERSION}_amd64.deb"
           RPM_FILE=$(ls nothypridle-${VERSION}*.rpm | head -1)
 
-          TAG="v${VERSION}"
-          SRC_URL="https://github.com/ininids/nothypridle/archive/refs/tags/${TAG}.tar.gz"
-          curl -sLo source.tar.gz "$SRC_URL"
+          curl -sLo source.tar.gz "${BIN_URL}"
           SHA256=$(sha256sum source.tar.gz | cut -d' ' -f1)
           rm source.tar.gz
-
-          cat > PKGBUILD << 'PKGBUILD_EOF'
+          cat > PKGBUILD << 'EOPKG'
           # Maintainer: Nikita Goncharov <ininids@ininids.in.rs>
-          pkgname=nothypridle
+          pkgname=nothypridle-bin
           pkgver=__VERSION__
           pkgrel=1
           pkgdesc="A Wayland idle management daemon written in Rust"
           arch=('x86_64')
           url="https://github.com/ininids/nothypridle"
           license=('BSD-3-Clause')
-          makedepends=('cargo' 'pkg-config' 'wayland-protocols')
           depends=('wayland')
-          source=("$pkgname-$pkgver.tar.gz::__SRC_URL__")
+          source=("${pkgname}-${pkgver}.tar.gz::__BIN_URL__")
           sha256sums=('__SHA256__')
-
-          build() {
-            cd "$pkgname-$pkgver"
-            cargo build --release --locked
-          }
-
           package() {
-            cd "$pkgname-$pkgver"
-            install -Dm755 target/release/nothypridle "$pkgdir/usr/bin/nothypridle"
-            install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
-            install -Dm644 dist/config.example.aam "$pkgdir/usr/share/$pkgname/config.example.aam"
-            install -Dm644 dist/rules.example.aam "$pkgdir/usr/share/$pkgname/rules.example.aam"
-            install -Dm644 dist/nothypridle.service "$pkgdir/usr/lib/systemd/user/nothypridle.service"
+            cd "${srcdir}"
+            tar xzf "${pkgname}-${pkgver}.tar.gz"
+            find . -name nothypridle -type f -exec install -Dm755 {} "${pkgdir}/usr/bin/nothypridle" \;
           }
-          PKGBUILD_EOF
-
+          EOPKG
           sed -i "s/__VERSION__/${VERSION}/g" PKGBUILD
           sed -i "s/__SHA256__/${SHA256}/g" PKGBUILD
-          sed -i "s|__SRC_URL__|${SRC_URL}|g" PKGBUILD
+          sed -i "s|__BIN_URL__|${BIN_URL}|g" PKGBUILD
 
-          gh release upload "v${VERSION}" --clobber \
+          gh release upload "${TAG}" --clobber \
             "${BIN_NAME}.tar.gz" \
             "nothypridle_${VERSION}_amd64.deb" \
             "${RPM_FILE}" \
