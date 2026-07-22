@@ -137,8 +137,9 @@ jobs:
           pkgdesc="A Wayland idle management daemon written in Rust"
           arch=('x86_64')
           url="https://github.com/ininids/nothypridle"
-          license=('BSD-3-Clause')
-          depends=('wayland')
+license=('BSD-3-Clause')
+options=(!debug)
+depends=('wayland')
           source=("${pkgname}-${pkgver}.tar.gz::__BIN_URL__")
           sha256sums=('__SHA256__')
           package() {
@@ -253,8 +254,9 @@ jobs:
           pkgdesc="A Wayland idle management daemon written in Rust"
           arch=('x86_64')
           url="https://github.com/ininids/nothypridle"
-          license=('BSD-3-Clause')
-          depends=('wayland')
+license=('BSD-3-Clause')
+options=(!debug)
+depends=('wayland')
           source=("${pkgname}-${pkgver}.tar.gz::__BIN_URL__")
           sha256sums=('__SHA256__')
           package() {
