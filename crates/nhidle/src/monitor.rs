@@ -4,7 +4,7 @@ use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Duration;
 
-use crate::nh_hal::resources::ResourceMonitor;
+use nh_hal::resources::ResourceMonitor;
 use wayland_client::backend::ObjectId;
 
 use crate::config::ListenerLoader;
@@ -41,10 +41,10 @@ impl ResourceSource for ResourceMonitor {
         ResourceMonitor::check_any_process_running(self, targets)
     }
     fn is_audio_playing(&self, name: &str) -> bool {
-        crate::nh_hal::audio::is_audio_playing(name)
+        nh_hal::audio::is_audio_playing(name)
     }
     fn is_any_audio_playing(&self) -> bool {
-        crate::nh_hal::audio::is_any_audio_playing()
+        nh_hal::audio::is_any_audio_playing()
     }
 }
 

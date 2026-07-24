@@ -759,6 +759,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "nh-hal"
+version = "0.1.3"
+dependencies = [
+ "mpris",
+ "nvml-wrapper",
+ "sysinfo",
+ "tracing",
+]
+
+[[package]]
 name = "nothypridle"
 version = "0.1.3"
 dependencies = [
@@ -766,10 +776,8 @@ dependencies = [
  "anyhow",
  "dirs",
  "futures-util",
- "mpris",
+ "nh-hal",
  "nothypridle",
- "nvml-wrapper",
- "sysinfo",
  "tokio",
  "tracing",
  "tracing-subscriber",

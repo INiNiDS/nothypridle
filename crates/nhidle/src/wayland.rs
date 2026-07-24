@@ -1,6 +1,6 @@
 use std::sync::{Arc, Mutex};
 
-use crate::nh_hal::resources::ResourceMonitor;
+use nh_hal::resources::ResourceMonitor;
 use wayland_client::event_created_child;
 use wayland_client::protocol::{wl_registry, wl_seat};
 use wayland_client::{

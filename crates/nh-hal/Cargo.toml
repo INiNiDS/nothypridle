@@ -1,0 +1,18 @@
+[package]
+name = "nh-hal"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+description = "Hardware/system integrations for nothypridle (audio, resources, media, GPU)."
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[dependencies]
+tracing = { workspace = true }
+sysinfo = { workspace = true }
+mpris = { workspace = true }
+nvml-wrapper = { workspace = true }
