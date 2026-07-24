@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nothypridle — Third-Party Licenses</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 80ch; margin: 2em auto; padding: 0 1em; line-height: 1.5; color: #1a1a1a; }
+  h1 { border-bottom: 1px solid #ccc; padding-bottom: .3em; }
+  h2 { margin-top: 2.5em; }
+  h3 { font-family: monospace; margin: 2em 0 .5em; }
+  hr { border: none; border-top: 1px solid #ddd; margin: 2em 0; }
+  pre { background: #f4f4f4; padding: 1em; overflow-x: auto; white-space: pre-wrap; font-size: .85em; border-radius: 4px; }
+  .crate-name { font-weight: 700; }
+  .crate-meta { color: #555; font-size: .9em; }
+  ul { padding-left: 1.2em; }
+  li { margin: .2em 0; }
+</style>
+</head>
+<body>
+<h1>nothypridle — Third-Party Notices &amp; Licenses</h1>
+
+<p>
+  Copyright &copy; 2026 Nikita Goncharov &lt;ininids@ininids.in.rs&gt;<br>
+  Licensed under <strong>BSD-3-Clause</strong> —
+  <a href="https://github.com/ininids/nothypridle">https://github.com/ininids/nothypridle</a>
+</p>
+
+<p>
+  This product includes the following third-party Rust crates. Each section reproduces
+  the full license text under which the listed crates are distributed, as declared in
+  their respective <code>Cargo.toml</code> metadata.
+</p>
+
+<hr>
+
+{{#each licenses}}
+  {{#if first_of_kind}}
+<h2>{{name}} ({{id}})</h2>
+  {{/if}}
+  {{#each used_by}}
+<h3>{{#if crate.repository}}<a href="{{crate.repository}}">{{crate.name}} v{{crate.version}}</a>{{else}}{{crate.name}} v{{crate.version}}{{/if}}</h3>
+<p class="crate-meta">
+  {{#if crate.authors}}Copyright &copy; {{#each crate.authors}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}<br>{{/if}}
+  License: {{crate.license}}
+</p>
+<pre>{{../text}}</pre>
+  {{/each}}
+{{/each}}
+</body>
+</html>
