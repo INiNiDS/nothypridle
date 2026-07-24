@@ -1,6 +1,7 @@
 [package]
 name = "nh-hal"
 version.workspace = true
+publish = false
 authors.workspace = true
 edition.workspace = true
 description = "Hardware/system integrations for nothypridle (audio, resources, media, GPU)."
