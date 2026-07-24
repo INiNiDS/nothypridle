@@ -88,7 +88,7 @@ jobs:
           [Install]
           WantedBy=graphical-session.target
           SVC
-          tar czf "${BIN_NAME}.tar.gz" -C "${BIN_NAME}" .
+          tar czf "${BIN_NAME}.tar.gz" "${BIN_NAME}"
 
           # .deb package
           DEB_ROOT="deb-pkg"
@@ -206,7 +206,7 @@ jobs:
           [Install]
           WantedBy=graphical-session.target
           SVC
-          tar czf "${BIN_NAME}.tar.gz" -C "${BIN_NAME}" .
+          tar czf "${BIN_NAME}.tar.gz" "${BIN_NAME}"
 
           DEB_ROOT="deb-pkg"
           mkdir -p "${DEB_ROOT}/DEBIAN" "${DEB_ROOT}/usr/bin" "${DEB_ROOT}/usr/lib/systemd/user"
