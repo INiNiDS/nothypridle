@@ -44,7 +44,7 @@ impl ResourceMonitor {
         self.sys.refresh_memory();
 
         let cpu_usage = self.sys.global_cpu_usage();
-        let free_mem = self.sys.free_memory();
+        let free_mem = self.sys.available_memory();
 
         let (gpu_busy, vram_free_mb) = self.gpu_monitor.get_metrics().unwrap_or((0, u64::MAX));
 
