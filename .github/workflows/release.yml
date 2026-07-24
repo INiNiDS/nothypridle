@@ -243,9 +243,7 @@ jobs:
           sudo alien -r --scripts "nothypridle_${VERSION}_amd64.deb"
           RPM_FILE=$(ls nothypridle-${VERSION}*.rpm | head -1)
 
-          curl -sLo source.tar.gz "${BIN_URL}"
-          SHA256=$(sha256sum source.tar.gz | cut -d' ' -f1)
-          rm source.tar.gz
+          SHA256=$(sha256sum "${BIN_NAME}.tar.gz" | cut -d' ' -f1)
           cat > PKGBUILD << 'EOPKG'
           # Maintainer: Nikita Goncharov <ininids@ininids.in.rs>
           pkgname=nothypridle-bin
